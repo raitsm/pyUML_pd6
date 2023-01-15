@@ -1,3 +1,5 @@
+from abc import *
+from abc import *
 import turtle
 
 class Canvas:
@@ -29,7 +31,7 @@ class Canvas:
         self.__screen.tracer(1)
         self.addShape(gObject)
 
-from abc import *
+
 class GeometricObject(ABC):
     def __init__(self):
         self.__lineColor = 'black'
@@ -69,24 +71,47 @@ class GeometricObject(ABC):
     def getCanvas(self):
         return self.__myCanvas
 
+
+# Added from the textbook
+# Shape can set & get its FillColor
+class Shape(GeometricObject):
+    def _init_(self):
+        super().__init_()
+        self.__fillColor = None
+        
+    def setFillColor(self, aColor): 
+        self.__fillColor = aColor
+        if self.getVisible():
+            self.getCanvas().drawAll()
+
+    def getFillColor(self):
+        return self.__fillColor
+
+
+# coords parameter for Point class is a tuple (x,y)
 class Point(GeometricObject):
     def __init__(self, x, y):
         super().__init__()
-        self.__x = x
-        self.__y = y
+        # self.__x = x
+        # self.__y = y
+        self.__coordinates = (x,y)
 
     def getCoord(self):
-        return (self.__x, self.__y)
+        # return (self.__x, self.__y)
+        return self.__coordinates
 
     def getX(self):
-        return self.__x
+        # return self.__x
+        return self.__coordinates[0]
 
     def getY(self):
-        return self.__y
-
+        # return self.__y
+        return self.__coordinates[1]
+    
     def _draw(self, turtle):
-        turtle.goto(self.__x, self.__y)
+        # turtle.goto(self.__x, self.__y)
        # turtle.dot(self.__lineWidth, self.__lineColor)
+        turtle.goto(self.__coordinates[0], self.__coordinates[1])
         turtle.dot(self.getWidth(), self.getColor())
 
 class Line(GeometricObject):
@@ -109,14 +134,57 @@ class Line(GeometricObject):
         turtle.down()
         turtle.goto(self.__p2.getCoord())
 
+
+
+
+class Polygon(Shape):
+    # parameters: vertices (list of tuples)
+    #
+    def __init__(self, corners : list):
+        super(Polygon,self).__init__()
+        self.__corners = corners
+    
+    def _draw(self, turtle):
+        turtle.color(self.getColor())
+        turtle.width(self.getWidth())
+        turtle.up()
+        start_point = (self.__corners[0].getCoord())
+
+        for c in self.__corners:
+            turtle.goto(c.getCoord())
+            turtle.down()
+        turtle.goto(start_point)            
+        turtle.up()
+
+class Triangle(Polygon):
+    def __init__(self, corners : list):
+        if len(corners) != 3:
+            raise ValueError("Triangle: wrong number of corners. must be three.")
+        else:
+            super(Triangle,self).__init__(corners)
+
+class Rectangle(Polygon):
+    pass
+
+class Octagon(Polygon):
+    pass
+
+    
+
+
+
 def test2():
     myCanvas = Canvas(500, 500)
     line1 = Line(Point(-100, -100), Point(100, 100))
     line2 = Line(Point(-100, 100), Point(100, -100))
-    line1.setWidth(4)    
+    # line1.setWidth(4)    
     myCanvas.draw(line1)
     myCanvas.draw(line2)
     line1.setColor('red')
     line2.setWidth(4)
+    t1 = Triangle([Point(-50,-50), Point(50,50), Point(50,0)])
+    t1.setWidth(2)
+    t1.setColor('yellow')
+    myCanvas.draw(t1)
     turtle.done()
 
