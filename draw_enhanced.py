@@ -119,8 +119,6 @@ class Point(GeometricObject):
         self.__coordinates(x,y)
     
     def _draw(self, turtle):
-        # turtle.goto(self.__x, self.__y)
-       # turtle.dot(self.__lineWidth, self.__lineColor)
         turtle.goto(self.__coordinates[0], self.__coordinates[1])
         turtle.dot(self.getWidth(), self.getColor())
     
@@ -152,7 +150,6 @@ class Polygon(Shape):
     # parameters: vertices (list of tuples)
     #
     def __init__(self, corners : list):
-        # check if any corners are 
         t = corners[0]
         # check if all corners have different coordinates
         for i in range(1,len(corners)-1):
@@ -162,30 +159,29 @@ class Polygon(Shape):
                 t = corners[i]
         if not self.__isconvex(corners):
             raise ValueError("Polygon: Must be a convex shape.")
+        if self.__intersecting_edges(corners):
+            raise ValueError("Polygon: edges should not intersect.")
         super().__init__()
         self.__corners = corners
 
     def __isconvex(self, corners) -> bool:
-    # checks if the polygon is convex
-    # not implemented yet    
+    # checks if the polygon is convex (it should be)
+    # not implemented    
         return True
     
+    def __intersecting_edges(self, corners) -> bool:
+    # checks if the edges of the polygon intersect (they shouldn't)
+    # not implemented
+        return False
+    
     def _draw(self, turtle):
-        # print("****")
         turtle.color(self.getColor())
         turtle.width(self.getWidth())
         turtle.up()
-        k = 0
-        start_point = (self.__corners[0].getCoord())
         for c in self.__corners:
             turtle.goto(c.getX(),c.getY()) # (c.getCoord())
             turtle.down()
-            # turtle.dot(8,"red")
-            # k += 1
-            # print(k, c.getCoord())
-            # print(turtle.xcor(), turtle.ycor())
         turtle.goto(self.__corners[0].getX(), self.__corners[0].getY())  #start_point)            
-        # print(turtle.xcor(), turtle.ycor())
         turtle.up()
 
     def getAllCorners(self) -> list:
@@ -214,7 +210,6 @@ class Polygon(Shape):
 class Triangle(Polygon):
     # A convenience class for Triangle
     # __init__ takes a list of three items of Point type to define a triangle
-
     # Limitations: 
     # a) There is no check if all three corners are on the same line
     
@@ -234,7 +229,7 @@ class Rectangle(Polygon):
         if width <= 0 or height <= 0:
             raise ValueError("Rectangle: Height or width cannot be zero.")
         else:
-        # proceed building the rectangle
+        # build the rectangle using LL coordinates, height and width
             corners = [ll]      # add lower left corner to the rectangle
             corners.append(Point(ll.getX() + width, ll.getY()))   # add lower right (x + width, same height)
             corners.append(Point(ll.getX() + width, ll.getY() + height)) # add upper right (x + width, y + height)
@@ -245,6 +240,8 @@ class Rectangle(Polygon):
             super().__init__(corners)
 
     def __rotate(self, corner_array : list, angle ) -> list:
+    # rotate the rectangle
+    # consider if this method could be moved up to Polygon class
     # the rotation angle shall be specified in degrees
     # get x and y for LL corner:
         x_base = corner_array[0].getX()
@@ -265,7 +262,7 @@ class Rectangle(Polygon):
             x_new = x_base + r * math.cos(math.radians(angle + base_angle))
             y_new = y_base + r * math.sin(math.radians(angle + base_angle))
             del corner_array[n]
-            corner_array.insert(n,Point(x_new, y_new))
+            corner_array.insert(n, Point(x_new, y_new))
         return corner_array
 
 
