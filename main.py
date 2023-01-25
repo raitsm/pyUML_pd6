@@ -37,8 +37,8 @@ def main():
     r2 = draw.Rectangle(draw.Point(100,0),100,140)
     shape_list.append(r2)
     
-    o1 = draw.Octagon([draw.Point(-200,30),draw.Point(-140,80),draw.Point(150,30),draw.Point(200,0),
-                       draw.Point(160,-60),draw.Point(0,-30),draw.Point(-150,0),draw.Point(-200,20)])
+    o1 = draw.Octagon([draw.Point(-200,30),draw.Point(-140,-70),draw.Point(40,-120),draw.Point(180,-60),
+                       draw.Point(180,30),draw.Point(140,90),draw.Point(40,140),draw.Point(-140,80)])
     o1.setWidth(3)
     o1.setColor('yellow')
 
